@@ -1,5 +1,5 @@
 # chiaWalletMonitor
-Get notifications when you get Chia XCH
+Get notifications when you get Chia XCH  -- Reach me at chia@ifhya.com
 
 Currently this only works in Windows but I will update it to work cross platform shortly.
 
