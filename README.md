@@ -15,7 +15,7 @@ Needs work:
 - Add a --stop command
 - Add more notification types
 
-If you want to test, change the line XCH='X' to XCH=0 and run it (IF you have at least 1 XCH already) and then change back once done testing.
+If you want to test, change the line `if XCH != 'X':` to `if XCH != 0:` and run it (IF you have at least 1 XCH already) and then change back once done testing.
 
 
 
