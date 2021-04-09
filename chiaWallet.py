@@ -1,30 +1,20 @@
-#This script for Windows runs in the background and tells you with a popup when you've gotten Chia XCH!
-#
-#Only working on windows! Cross platform version coming shortly
-#
-#You will need to do 'pip install pywin32' as that is needed to hide the process in the background.
-#Also for playsound, pushover,and any other modules you might be missing.
-#
-#Run from normal command prompt
-#
-#Come join us on the Flexpool Discord #CHIA channel! https://discord.gg/JESmva9R
-#
+import datetime #for reading present date
+import time 
+import requests #for retreiving coronavirus data from web
+from plyer import notification #for getting notification on your PC
 
-#By Wolfrage - xch1dylvrjqwsfjywy9a4swx4armnde9jdar4g2e9muxzgd7dnl0gstsxjx3p0
+#Your chia wallet address
+walletaddress = 'xch1kxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
-#Chi chi chi Chia!
-
-ver = ".07"
-
-#Display Popup when you get XCH?
-showPopup = True
+sendDiscord = True
+discordWebhook = r'https://discord.com/api/webhooks/00000000000000000/XXXXXXXXXXXXXXXXXXXXXXXXXX 
 
 #Send push notification over Pushover?
 sendPushover = False
 pushoverUserKey = ''
 pushoverAPIKey = ''
 
-#Play a custom sound?
+#Play a custom sound file?
 playSound = False
 song = 'audio.mp3'
 
@@ -35,65 +25,58 @@ slack_channel = '#my-channel'
 slack_icon_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuGqps7ZafuzUsViFGIremEL2a3NR0KO0s0RTCMXmzmREJd5m4MA&s'
 slack_user_name = 'Chia Wallet Monitor'
 
-#Location of your chia executable - CHECK THE VERSION NUMBER in app-XXX as it will change with Chia updates
-chialoc = "c:\\Users\\Wofl\\AppData\\Local\\chia-blockchain\\app-1.0.2\\resources\\app.asar.unpacked\\daemon\\chia.exe"
 
-#Set XCH to 0 to test it at launch, set it to 'X' for normal operation
-XCH = 'X'
 
-import requests
-import json
-import subprocess
-import sys,os
-import re
-import time
-import ctypes
+#BEGIN
 
-#currently Windows only -- will change ability to hide and do popup on Linux as well shortly
-import win32gui, win32console, win32api, win32con #pip install these
-  
+#let there is no data initially
+chiWallet = None
+currXCH = 0
+grossBalance = -1
+firstRun = True
+   
+while(True):
+
+    try:
+        chiaWallet = requests.get("https://api2.chiaexplorer.com/address/" + walletaddress)
+    except:
+        print("Please! Check your internet connection")
+
+    if (chiaWallet != None and firstRun == True):
+
+        data = chiaWallet.json()
+        notification.notify(
+                title = "Your wallet as of {}".format(datetime.date.today()),
+                message = "You have a total of {grossBalance} XCH, Farmer!".format(
+                            grossBalance = data['grossBalance']/1000000000000),
+                app_icon = "chia.ico",
+                timeout  = 10
+            )
+        currXCH = grossBalance
+        time.sleep(10*3)
     
-def post_message_to_slack(text, blocks = None):
-    return requests.post('https://slack.com/api/chat.postMessage', {
-        'token': slack_token,
-        'channel': slack_channel,
-        'text': text,
-        'icon_url': slack_icon_url,
-        'username': slack_user_name,
-        'blocks': json.dumps(blocks) if blocks else None
-    }).json()	
-    
-    
-# start program
-try:  
-    os.unlink('lock') 
-    fd=os.open("lock", os.O_CREAT|os.O_EXCL) 
-except: 
-    try: fd=os.open("lock", os.O_CREAT|os.O_EXCL) 
-    except:  
-        print ("ChiaWalletMonitor version "+ ver +" is already running, ya goof!")  
-        sys.exit()  
+    if (chiaWallet != None and firstRun == False):
 
-
-
-win32gui.ShowWindow(win32console.GetConsoleWindow(), win32con.SW_HIDE)
-
-ctypes.windll.user32.MessageBoxW(0, "Script is now running in the background!  You'll be notified of new Chia XCH in your wallet!", "ChiaWalletMonitor "+ ver + " is running!", 0)
-
-pattern = re.compile('-Confirmed: [0-9]+ mojo \(([0-9]*\.[0-9]+) xch\)')
-
-while True:
-    m=pattern.search(subprocess.run(chialoc +" wallet show", stdout=subprocess.PIPE).stdout.decode('utf-8'))
-    
-    if XCH != 'X':
-        if m.group(1) != XCH:
-            XCH = m.group(1)
-            msgTxt = 'You got ' + m.group(1) + ' XCH from Chia! Way to go, buddy!'
+        data = chiaWallet.json()
+        grossBalance = data['grossBalance']/1000000000000
+   
+        if currXCH != grossBalance:
+            msgTxt = "You got Chia, for a total of {grossBalance} XCH, Chia Pet!".format(grossBalance = data['grossBalance']/1000000000000)
             msgTitle = 'Congrats, Chia Farmer!'
             
-            if showPopup == True:
-                ctypes.windll.user32.MessageBoxW(0, msgTxt, msgTitle, 0)
-                
+            notification.notify(
+                title = msgTitle,
+                message = msgTxt ,
+                app_icon = "chia.ico",
+                timeout  = 50
+            )
+            
+            if sendDiscord == True:
+                import discord_notify as dn
+                discord_info = msgTxt
+                notifier = dn.Notifier(discordWebhook)
+                notifier.send(discord_info, print_message=False)
+            
             if sendPushover == True:
                 from pushover import init, Client
                 client = Client(pushoverUserKey, api_token=pushoverAPIKey)
@@ -104,17 +87,10 @@ while True:
                 playsound(song)
             
             if sendSlack == True:
-                slack_info = 'You got *{}* XCH from Chia! Congrats, Buddy!|Chia Wallet Monitor>.'.format(m.group(1))
+                slack_info = msgTxt
                 post_message_to_slack(slack_info)
-            
-                
-    if XCH == 'X':
-       XCH = m.group(1)  
- 
-    time.sleep(30)
-# exit program
-try: os.close(fd)  # (6)
-except: pass
-try: os.unlink('lock')  
-except: pass
-sys.exit()  
+        
+    firstRun = False
+    currXCH = grossBalance
+
+    time.sleep(10*3)
