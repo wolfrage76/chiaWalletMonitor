@@ -6,7 +6,7 @@ from plyer import notification #for getting notification on your PC
 walletaddress = 'xch1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 sendDiscord = True
-discordWebhook = r'https://discord.com/api/webhooks/000000000000000/xxxxxxxxxxxxxxxxxxxxxxxxxxx4'
+discordWebhook = r'https://discord.com/api/webhooks/000000000000000/xxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 #Send push notification over Pushover?
 sendPushover = False
