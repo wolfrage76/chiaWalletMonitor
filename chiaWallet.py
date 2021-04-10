@@ -3,10 +3,10 @@ import time
 import requests #for retreiving coronavirus data from web
 from plyer import notification #for getting notification on your PC
 
-walletaddress = 'xch1kmprm5nk6yj0dyswpjd3u4h7ammyv6ukvwkytr76arfh852zux8s7wjhrj'
+walletaddress = 'xch1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 sendDiscord = True
-discordWebhook = r'https://discord.com/api/webhooks/829193074798100520/rgbjVKyFSoY6eXkF-frLPbBICg8cYZFQx9RV4h_5VsPkX0b1YAy_IFSFbrhEdSFgSmA4'
+discordWebhook = r'https://discord.com/api/webhooks/000000000000000/xxxxxxxxxxxxxxxxxxxxxxxxxxx4'
 
 #Send push notification over Pushover?
 sendPushover = False
