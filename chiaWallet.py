@@ -24,6 +24,9 @@ slack_channel = '#my-channel'
 slack_icon_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuGqps7ZafuzUsViFGIremEL2a3NR0KO0s0RTCMXmzmREJd5m4MA&s'
 slack_user_name = 'Chia Wallet Monitor'
 
+#SendPushBullet notification?
+sendPushBullet = False
+pbAPIKey = 'xxxxxxxxxx'
 
 
 #BEGIN
@@ -87,8 +90,13 @@ while(True):
                 playsound(song)
             
             if sendSlack == True:
-                slack_info = msgTxt
-                post_message_to_slack(slack_info)
+                post_message_to_slack(msgTxt)
+                
+            if sendPushBullet == True:
+                from pushbullet import Pushbullet
+                pb = Pushbullet(pbAPIKey)
+                push = pb.push_note(msgTitle, msgTxt)
+                
         
     firstRun = False
     currXCH = grossBalance
