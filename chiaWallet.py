@@ -3,6 +3,18 @@ import time
 import requests #for retreiving coronavirus data from web
 from plyer import notification #for getting notification on your PC
 
+
+from infi.systray import SysTrayIcon
+def checkWallet(systray):
+    print("")
+menu_options = []#(("Check Wallet", None, checkWallet),)
+systray = SysTrayIcon("chia.ico", "ChiaWalletMonitor", menu_options)
+systray.start()
+
+def on_quit_callback(systray):
+    program.shutdown()
+systray = SysTrayIcon("icon.ico", "Example tray icon", menu_options, on_quit=on_quit_callback)
+
 walletaddress = 'xch1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 sendDiscord = True
