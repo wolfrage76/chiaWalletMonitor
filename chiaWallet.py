@@ -1,12 +1,13 @@
 import datetime #for reading present date
 import time 
+import os
 import requests #for retreiving coronavirus data from web
 from plyer import notification #for getting notification on your PC
 
-
-from infi.systray import SysTrayIcon
-
-
+enableSysTray = False
+if os.name == 'nt':
+    from infi.systray import SysTrayIcon
+    enableSysTray = True
 
 walletaddress = 'xch1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 
@@ -36,18 +37,18 @@ pbAPIKey = 'XXXXXXXXXXXXXXXXXXXXX'
 
 
 
-
 def on_quit_callback(systray):
     print("QUIT!")
-    
-    systray.shutdown()
+    if systray:
+        systray.shutdown()
    
 
 def checkWallet(systray):
     print("Wallet check")
 
 menu_options = (("Check Wallet", None, checkWallet),)
-systray = SysTrayIcon("chia.ico", "ChiaWalletMonitor", menu_options, on_quit=on_quit_callback)
+if enableSysTray:
+    systray = SysTrayIcon("chia.ico", "ChiaWalletMonitor", menu_options, on_quit=on_quit_callback)
 
 
 
@@ -58,7 +59,8 @@ chiWallet = None
 currXCH = 0
 grossBalance = -1
 firstRun = True
-systray.start()
+if enableSysTray:
+    systray.start()
 
 headers = requests.utils.default_headers()
 print(headers)      
