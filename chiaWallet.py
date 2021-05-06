@@ -37,7 +37,6 @@ pbAPIKey = 'XXXXXXXXXXXXXXXXXXXXX'
 
 
 
-
 def on_quit_callback(systray):
     print("QUIT!")
     if systray:
@@ -96,7 +95,7 @@ while(True):
         netBalance = data['netBalance']/1000000000000
    
         if currXCH != netBalance:
-            msgTxt = "You got Chia, for a total of {netBalance} XCH, Chia Pet!".format(netBalance = data['netBalance']/1000000000000)
+            msgTxt = "Your Chia balance has changed, for a total of {netBalance} XCH, Chia Pet!".format(netBalance = data['netBalance']/1000000000000)
             msgTitle = 'Congrats, Chia Farmer!'
             
             notification.notify(
@@ -133,4 +132,3 @@ while(True):
     time.sleep(10*3)
     firstRun = False
     currXCH = netBalance
-    
