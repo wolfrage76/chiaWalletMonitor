@@ -6,4 +6,4 @@ pushbullet.py==0.9.1
 infi.systray==0.1.12
 plyer==2.0.0
 infi==0.0.1
-pushover==0.5
+python-pushover==1.0
