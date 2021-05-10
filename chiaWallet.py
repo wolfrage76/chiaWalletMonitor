@@ -77,13 +77,16 @@ while(True):
         netBalance = data['netBalance']/1000000000000
 
         if (firstRun == True):
+            shouldPrint = True
             msgTitle = "Your wallet as of {}".format(datetime.date.today())
             msgTxt = "You have a total of {} XCH, Farmer!".format(netBalance)
-
+            
         else:
             if currXCH != netBalance:
+                shouldPrint = True
                 msgTxt = "Your Chia balance has changed, for a total of {netBalance} XCH, Chia Pet!".format(netBalance = data['netBalance']/1000000000000)
                 msgTitle = 'Congrats, Chia Farmer!'
+                
                 
                 if sendDiscord == True:
                     import discord_notify as dn
@@ -108,14 +111,17 @@ while(True):
                     pb = Pushbullet(pbAPIKey)
                     push = pb.push_note(msgTitle, msgTxt)
 
-    notification.notify(
-        title = msgTitle,
-        message = msgTxt ,
-        app_icon = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chia.ico"),
-        app_name = "Chia Wallet Monitor",
-        timeout  = 50
-    )
+    if shouldPrint == True:
+        print(msgTxt)
+        notification.notify(
+            title = msgTitle,
+            message = msgTxt ,
+            app_icon = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chia.ico"),
+            app_name = "Chia Wallet Monitor",
+            timeout  = 50
+        )
+    
+    shouldPrint = False
     firstRun = False
     currXCH = netBalance
-    print(msgTxt)
     time.sleep(10*3)
