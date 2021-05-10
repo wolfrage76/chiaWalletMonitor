@@ -8,7 +8,8 @@ When your wallet gets XCH, you can get a notification via Popup, Push notice thr
 
 First create a virtual env and install de dependencies:
 ```cli
-python3 -m venv --system-site-packages my_venv
+python3 -m venv --system-site-packages venv
+. ./venv/bin/activate
 pip install -r requirements.txt
 ```
 
