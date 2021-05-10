@@ -35,8 +35,6 @@ slack_user_name = 'Chia Wallet Monitor'
 sendPushBullet = False
 pbAPIKey = 'XXXXXXXXXXXXXXXXXXXXX'
 
-
-
 def on_quit_callback(systray):
     print("QUIT!")
     if systray:
@@ -74,61 +72,56 @@ while(True):
     except:
         print("Please! Check your internet connection")
 
-    if (chiaWallet != None and firstRun == True):
-
-        data = chiaWallet.json()
-        #print(data)
-        netBalance = data['netBalance']/1000000000000
-        notification.notify(
-                title = "Your wallet as of {}".format(datetime.date.today()),
-                message = "You have a total of {} XCH, Farmer!".format(data['netBalance']/1000000000000)
-                            ,
-                app_icon = "chia.ico",
-                timeout  = 10
-            )
-        currXCH = netBalance
-        time.sleep(10*3)
-    
-    if (chiaWallet != None and firstRun == False):
-
+    if (chiaWallet != None):
         data = chiaWallet.json()
         netBalance = data['netBalance']/1000000000000
-   
-        if currXCH != netBalance:
-            msgTxt = "Your Chia balance has changed, for a total of {netBalance} XCH, Chia Pet!".format(netBalance = data['netBalance']/1000000000000)
-            msgTitle = 'Congrats, Chia Farmer!'
+
+        if (firstRun == True):
+            shouldPrint = True
+            msgTitle = "Your wallet as of {}".format(datetime.date.today())
+            msgTxt = "You have a total of {} XCH, Farmer!".format(netBalance)
             
-            notification.notify(
-                title = msgTitle,
-                message = msgTxt ,
-                app_icon = "chia.ico",
-                app_name = "Chia Wallet Monitor",
-                timeout  = 50
-            )
-            
-            if sendDiscord == True:
-                import discord_notify as dn
-                discord_info = msgTxt
-                notifier = dn.Notifier(discordWebhook)
-                notifier.send(discord_info, print_message=False)
-            
-            if sendPushover == True:
-                from pushover import init, Client
-                client = Client(pushoverUserKey, api_token=pushoverAPIKey)
-                client.send_message(msgTxt, title=msgTitle) #pip install python-pushover
+        else:
+            if currXCH != netBalance:
+                shouldPrint = True
+                msgTxt = "Your Chia balance has changed, for a total of {netBalance} XCH, Chia Pet!".format(netBalance = data['netBalance']/1000000000000)
+                msgTitle = 'Congrats, Chia Farmer!'
+                
+                
+                if sendDiscord == True:
+                    import discord_notify as dn
+                    discord_info = msgTxt
+                    notifier = dn.Notifier(discordWebhook)
+                    notifier.send(discord_info, print_message=False)
+                
+                if sendPushover == True:
+                    from pushover import init, Client
+                    client = Client(pushoverUserKey, api_token=pushoverAPIKey)
+                    client.send_message(msgTxt, title=msgTitle) #pip install python-pushover
+                        
+                if playSound == True:
+                    from playsound import playsound #pip install playsound
+                    playsound(song)
+                
+                if sendSlack == True:
+                    post_message_to_slack(msgTxt)
                     
-            if playSound == True:
-                from playsound import playsound #pip install playsound
-                playsound(song)
-            
-            if sendSlack == True:
-                post_message_to_slack(msgTxt)
-                
-            if sendPushBullet == True:
-                from pushbullet import Pushbullet
-                pb = Pushbullet(pbAPIKey)
-                push = pb.push_note(msgTitle, msgTxt)
-                
-    time.sleep(10*3)
+                if sendPushBullet == True:
+                    from pushbullet import Pushbullet
+                    pb = Pushbullet(pbAPIKey)
+                    push = pb.push_note(msgTitle, msgTxt)
+
+    if shouldPrint == True:
+        print(msgTxt)
+        notification.notify(
+            title = msgTitle,
+            message = msgTxt ,
+            app_icon = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chia.ico"),
+            app_name = "Chia Wallet Monitor",
+            timeout  = 50
+        )
+    
+    shouldPrint = False
     firstRun = False
     currXCH = netBalance
+    time.sleep(10*3)

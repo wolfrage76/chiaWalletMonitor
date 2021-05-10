@@ -1,4 +1,4 @@
-python_pushover==0.4
+wheel
 playsound==1.2.2
 requests==2.25.1
 discord_notify==1.0.0
@@ -6,4 +6,5 @@ pushbullet.py==0.9.1
 infi.systray==0.1.12
 plyer==2.0.0
 infi==0.0.1
-python-pushover==1.0
+python-pushover==0.4
+dbus-python
